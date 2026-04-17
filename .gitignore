@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+dist
+coverage
+*.log
+
+.env
+.env.*
+!.env.example
+
+blueprint.md
+technical-architecture.md
+session-history.md
+
+data
