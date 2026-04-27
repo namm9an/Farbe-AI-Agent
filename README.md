@@ -12,7 +12,7 @@ Built for event creatives, partner branding, banners, booth assets, and campaign
 - Compares reference and target palettes using CIE76 perceptual color distance
 - Scores the match from 0–100 and classifies colors as primary, secondary, accent, or neutral
 - Flags mismatched tones and imbalances with plain-language findings
-- Generates actionable suggestions via a hosted Qwen vision-language model (optional — works without it too)
+- Generates actionable suggestions via a hosted Llama model (optional — works without it too)
 - Persists all analysis runs to SQLite for internal history
 
 ---
@@ -26,7 +26,7 @@ Built for event creatives, partner branding, banners, booth assets, and campaign
 | Styling | Tailwind CSS v4 |
 | Image processing | Pillow |
 | Color comparison | Custom CIE76 implementation |
-| AI suggestions | OpenAI-compatible endpoint (Qwen3-VL-8B-Instruct via E2E inference) |
+| AI suggestions | OpenAI-compatible endpoint (llama-3.3-70b-instruct via E2E inference) |
 | Persistence | SQLite |
 | Deployment | Next.js on `3001`, FastAPI on `8001`, nginx reverse proxy |
 
@@ -70,7 +70,7 @@ The LLM layer is optional — if `E2E_LLM_API_KEY` is not set, the app still run
 |---|---|---|
 | `E2E_LLM_BASE_URL` | No | Base URL of your OpenAI-compatible inference endpoint |
 | `E2E_LLM_API_KEY` | No | API key for the inference endpoint |
-| `E2E_LLM_MODEL` | No | Model name (default: `Qwen/Qwen3-VL-8B-Instruct`) |
+| `E2E_LLM_MODEL` | No | Model name (default: `llama-3.3-70b-instruct`) |
 | `DATABASE_URL` | No | Path to the SQLite file (default: `data/farbe.db`) |
 
 ---
@@ -97,7 +97,7 @@ backend/
     lib/
       color.py         # Pillow palette extraction
       compare.py       # CIE76 matching, scoring, findings, suggestions
-      llm.py           # Hosted Qwen endpoint wrapper
+      llm.py           # Hosted LLM endpoint wrapper
       db.py            # SQLite persistence
       env.py           # shared env loading
     models/
@@ -157,12 +157,12 @@ bash scripts/deploy-vm.sh
 
 ## How the analysis works
 
-1. Both images are resized to 180×180 and converted to raw RGBA pixels using Sharp
+1. Both images are resized to 180x180 and converted to RGBA pixels using Pillow
 2. Transparent, near-white, and near-black pixels are excluded
 3. Remaining pixels are bucketed into 16-step color groups and sorted by frequency
 4. The top 6 colors per image become the extracted palette
 5. Each reference color is matched to its closest target color using CIE76 delta-E distance
 6. A weighted match score (0–100) is computed from distances and color weights
 7. Findings and suggestions are built from the match data
-8. If an LLM endpoint is configured, the structured findings are sent to Qwen for a plain-language summary and two additional recommendations
+8. If an LLM endpoint is configured, the structured findings are sent to the hosted model for a plain-language summary and two additional recommendations
 9. The result is returned to the UI and saved to SQLite

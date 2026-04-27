@@ -7,6 +7,7 @@ FRONTEND_PORT="${FRONTEND_PORT:-3001}"
 BACKEND_PORT="${BACKEND_PORT:-8001}"
 FRONTEND_LOG="${FRONTEND_LOG:-/root/${APP_NAME}-frontend.log}"
 BACKEND_LOG="${BACKEND_LOG:-/root/${APP_NAME}-backend.log}"
+PYTHON_BIN="${PYTHON_BIN:-$(command -v python3)}"
 
 kill_port_if_running() {
   local port="$1"
@@ -26,7 +27,7 @@ kill_port_if_running() {
 }
 
 echo "Installing backend dependencies..."
-python3 -m pip install -r backend/requirements.txt
+"${PYTHON_BIN}" -m pip install -r backend/requirements.txt
 
 echo "Installing frontend dependencies..."
 npm --prefix frontend ci
@@ -40,7 +41,7 @@ kill_port_if_running "${BACKEND_PORT}"
 kill_port_if_running "${FRONTEND_PORT}"
 
 echo "Starting backend on port ${BACKEND_PORT}..."
-nohup env PORT="${BACKEND_PORT}" bash scripts/start-backend-vm.sh > "${BACKEND_LOG}" 2>&1 &
+nohup env PORT="${BACKEND_PORT}" PYTHON_BIN="${PYTHON_BIN}" bash scripts/start-backend-vm.sh > "${BACKEND_LOG}" 2>&1 &
 
 echo "Starting frontend on port ${FRONTEND_PORT}..."
 nohup env PORT="${FRONTEND_PORT}" NODE_ENV=production bash scripts/start-frontend-vm.sh > "${FRONTEND_LOG}" 2>&1 &

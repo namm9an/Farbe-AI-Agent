@@ -68,5 +68,5 @@ env = EnvConfig(
     database_url=os.environ.get("DATABASE_URL", "data/farbe.db"),
     llm_base_url=os.environ.get("E2E_LLM_BASE_URL"),
     llm_api_key=os.environ.get("E2E_LLM_API_KEY"),
-    llm_model=os.environ.get("E2E_LLM_MODEL", "Qwen/Qwen3-VL-8B-Instruct"),
+    llm_model=os.environ.get("E2E_LLM_MODEL", "llama-3.3-70b-instruct"),
 )
