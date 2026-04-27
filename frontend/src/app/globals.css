@@ -1,9 +1,5 @@
 @import "tailwindcss";
 
-:root {
-  color-scheme: dark;
-}
-
 * {
   box-sizing: border-box;
 }
@@ -17,11 +13,11 @@ body {
     "Avenir Next",
     "Segoe UI",
     sans-serif;
-  background: #020617;
+  background: #ffffff;
 }
 
 body {
-  color: #f8fafc;
+  color: #0f172a;
 }
 
 a {
@@ -34,21 +30,4 @@ input,
 textarea,
 select {
   font: inherit;
-}
-
-@theme {
-  --animate-aurora: aurora 60s linear infinite;
-
-  --color-white: #ffffff;
-  --color-black: #000000;
-  --color-transparent: transparent;
-}
-
-@keyframes aurora {
-  from {
-    background-position: 50% 50%, 50% 50%;
-  }
-  to {
-    background-position: 350% 50%, 350% 50%;
-  }
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-import { AuroraBackground } from "@/components/ui/aurora-background";
+import { YellowGlowBackground } from "@/components/ui/background-components";
 import { AnalyzerForm } from "@/components/analyzer-form";
 import { ResultsPanel } from "@/components/results-panel";
 import type { AnalysisResult } from "@/types/analysis";
@@ -21,30 +21,30 @@ export default function Home() {
   });
 
   return (
-    <div className="min-h-screen dark bg-zinc-900">
-      {/* Hero section — aurora covers exactly one viewport height */}
-      <AuroraBackground>
+    <YellowGlowBackground>
+      {/* Hero */}
+      <div className="flex min-h-[44vh] flex-col items-center justify-center px-6 pt-20 pb-12 text-center">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative z-10 flex flex-col items-center gap-4 px-6 text-center"
+          className="flex flex-col items-center gap-4"
         >
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-zinc-400">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">
             Farbe
           </p>
-          <h1 className="max-w-2xl text-4xl font-semibold leading-tight text-white md:text-5xl">
+          <h1 className="max-w-2xl text-4xl font-semibold leading-tight text-slate-900 md:text-5xl">
             Color matching for design work.
           </h1>
-          <p className="max-w-md text-sm leading-6 text-zinc-400">
+          <p className="max-w-md text-sm leading-6 text-slate-600">
             Upload a reference and a target. Get palette, score, and findings.
           </p>
         </motion.div>
-      </AuroraBackground>
+      </div>
 
-      {/* Upload + results — sits below the hero */}
-      <div className="mx-auto max-w-5xl px-4 py-12 md:px-8">
-        <div className="rounded-2xl border border-white/8 bg-zinc-800/50 p-6 shadow-xl backdrop-blur-sm md:p-8">
+      {/* Upload + results */}
+      <div className="mx-auto max-w-5xl px-4 pb-20 md:px-8">
+        <div className="rounded-2xl border border-slate-200 bg-white/80 p-6 shadow-sm backdrop-blur-sm md:p-8">
           <AnalyzerForm
             onResult={(nextResult, nextPreviews) => {
               setResult(nextResult);
@@ -59,6 +59,6 @@ export default function Home() {
           </div>
         ) : null}
       </div>
-    </div>
+    </YellowGlowBackground>
   );
 }
