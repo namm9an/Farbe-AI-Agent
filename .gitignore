@@ -1,0 +1,16 @@
+node_modules
+frontend/node_modules
+frontend/.next
+backend/.venv
+backend/__pycache__
+backend/**/*.pyc
+data
+*.log
+
+.env
+.env.local
+.env.*.local
+
+blueprint.md
+technical-architecture.md
+session-history.md
