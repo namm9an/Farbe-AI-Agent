@@ -21,13 +21,14 @@ Built for event creatives, partner branding, banners, booth assets, and campaign
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 16, React 19, TypeScript |
+| Frontend | Next.js 16, React 19, TypeScript |
+| Backend | FastAPI, Python 3 |
 | Styling | Tailwind CSS v4 |
-| Image processing | Sharp |
+| Image processing | Pillow |
 | Color comparison | Custom CIE76 implementation |
 | AI suggestions | OpenAI-compatible endpoint (Qwen3-VL-8B-Instruct via E2E inference) |
-| Persistence | SQLite via better-sqlite3 |
-| Deployment | Single Next.js process on Ubuntu VM, nginx reverse proxy |
+| Persistence | SQLite |
+| Deployment | Next.js on `3001`, FastAPI on `8001`, nginx reverse proxy |
 
 ---
 
@@ -36,13 +37,28 @@ Built for event creatives, partner branding, banners, booth assets, and campaign
 ```bash
 git clone https://github.com/namm9an/Farbe-AI-Agent.git
 cd Farbe-AI-Agent
-npm install
 cp .env.example .env
 # fill in your E2E_LLM_API_KEY in .env
+python3 -m pip install -r backend/requirements.txt
+npm --prefix frontend install
+```
+
+Run the backend:
+
+```bash
+cd backend
+python3 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
+```
+
+Run the frontend in a second terminal:
+
+```bash
+cd frontend
 npm run dev
 ```
 
-App runs at `http://localhost:3000`.
+The frontend runs at `http://localhost:3000`.
+The backend runs at `http://localhost:8001`.
 
 The LLM layer is optional — if `E2E_LLM_API_KEY` is not set, the app still runs and returns deterministic findings and suggestions without the model narrative.
 
@@ -62,30 +78,37 @@ The LLM layer is optional — if `E2E_LLM_API_KEY` is not set, the app still run
 ## Project structure
 
 ```
-src/
+frontend/
+  src/
+    app/
+      layout.tsx
+      page.tsx
+    components/
+      analyzer-form.tsx
+      results-panel.tsx
+    types/
+      analysis.ts
+  next.config.ts       # local /api rewrite to FastAPI on 8001
+backend/
   app/
-    api/analyze/       # POST endpoint — runs the full analysis pipeline
-    layout.tsx
-    page.tsx
-  components/
-    analyzer-form.tsx  # Upload panel for reference and target images
-    results-panel.tsx  # Palette display, match score, findings, suggestions
-  lib/
-    analysis/
-      color-extraction.ts   # Pixel bucketing and palette extraction using Sharp
-      compare-palettes.ts   # CIE76 delta-E matching, scoring, findings, suggestions
-    llm/
-      client.ts        # Wraps the hosted Qwen endpoint for suggestion narratives
-    db.ts              # SQLite setup and analysis run persistence
-    env.ts             # Typed environment config
-  types/
-    analysis.ts        # Shared TypeScript types
+    main.py
+    routes/
+      analyze.py       # POST /api/analyze
+    lib/
+      color.py         # Pillow palette extraction
+      compare.py       # CIE76 matching, scoring, findings, suggestions
+      llm.py           # Hosted Qwen endpoint wrapper
+      db.py            # SQLite persistence
+      env.py           # shared env loading
+    models/
+      analysis.py      # Pydantic models matching TS response shape
 scripts/
-  start-vm.sh          # Production start with configurable host and port
-  deploy-vm.sh         # Install, build, kill old process, and restart on VM
+  start-frontend-vm.sh
+  start-backend-vm.sh
+  deploy-vm.sh
 deploy/
   nginx/
-    farbe-ai-agent.conf  # nginx server block for farbe.docustory.in
+    farbe-ai-agent.conf
 ```
 
 ---
@@ -102,11 +125,12 @@ cd farbe-ai-agent
 cp .env.example .env
 nano .env
 
-# Deploy (install, build, start on port 3001)
+# Deploy (install backend + frontend, build frontend, start both services)
 bash scripts/deploy-vm.sh
 ```
 
-App will be running at `http://205.147.100.39:3001`.
+The frontend will run on `3001`.
+The backend API will run on `8001`.
 
 When the domain `farbe.docustory.in` is ready, enable the nginx config:
 
